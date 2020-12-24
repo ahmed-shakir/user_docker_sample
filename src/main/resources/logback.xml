@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property resource="application.properties" />
+    <contextName>${spring.application.name}</contextName>
+
+    <!-- Properties -->
+    <property name="LOG_DIR" value="logs" />
+    <property name="ARCHIVED_LOG_DIR" value="${LOG_DIR}/archived" />
+    <property name="USER_INFO" value="user-info" />
+    <property name="USER_WARN" value="user-warn" />
+    <property name="USER_ERROR" value="user-error" />
+    <property name="USER_ERROR_DETAILS" value="user-error-details" />
+
+    <!-- Appender section -->
+    <appender name="jsonConsole" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <version/>
+                <logLevel/>
+                <message/>
+                <loggerName/>
+                <threadName/>
+                <context/>
+                <pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                    <pattern>
+                        {
+                        "trace": "%X{X-B3-TraceId:-}",
+                        "span": "%X{X-B3-SpanId:-}",
+                        "parent": "%X{X-B3-ParentSpanId:-}",
+                        "exportable": "%X{X-Span-Export:-}",
+                        "baggage": "%X{key:-}",
+                        "severity": "%level",
+                        "service": "%contextName",
+                        "pid": "${PID:-}",
+                        "thread": "%thread",
+                        "class": "%logger{}",
+                        "message": "%message",
+                        "stacktrace": "%ex{full}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d %contextName [%t] %level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">-->
+    <!--<appender name="EMAIL" class="ch.qos.logback.classic.net.SMTPAppender">-->
+
+    <appender name="USER_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${USER_INFO}.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${ARCHIVED_LOG_DIR}/${USER_INFO}-%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>Europe/Stockholm</timeZone>
+                </timestamp>
+                <version/>
+                <context/>
+                <pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                    <pattern>
+                        {
+                        "trace": "%X{X-B3-TraceId:-}",
+                        "span": "%X{X-B3-SpanId:-}",
+                        "parent": "%X{X-B3-ParentSpanId:-}",
+                        "exportable": "%X{X-Span-Export:-}",
+                        "baggage": "%X{key:-}",
+                        "severity": "%level",
+                        "service": "%contextName",
+                        "pid": "${PID:-}",
+                        "thread": "%thread",
+                        "class": "%logger{}",
+                        "message": "%message %nopex",
+                        "stacktrace": "%ex{full}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="USER_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${USER_WARN}.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${ARCHIVED_LOG_DIR}/${USER_WARN}-%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>Europe/Stockholm</timeZone>
+                </timestamp>
+                <version/>
+                <context/>
+                <pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                    <pattern>
+                        {
+                        "trace": "%X{X-B3-TraceId:-}",
+                        "span": "%X{X-B3-SpanId:-}",
+                        "parent": "%X{X-B3-ParentSpanId:-}",
+                        "exportable": "%X{X-Span-Export:-}",
+                        "baggage": "%X{key:-}",
+                        "severity": "%level",
+                        "service": "%contextName",
+                        "pid": "${PID:-}",
+                        "thread": "%thread",
+                        "class": "%logger{}",
+                        "message": "%message %nopex",
+                        "stacktrace": "%ex{full}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="USER_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${USER_ERROR}.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${ARCHIVED_LOG_DIR}/${USER_ERROR}-%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>Europe/Stockholm</timeZone>
+                </timestamp>
+                <version/>
+                <context/>
+                <pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                    <pattern>
+                        {
+                        "trace": "%X{X-B3-TraceId:-}",
+                        "span": "%X{X-B3-SpanId:-}",
+                        "parent": "%X{X-B3-ParentSpanId:-}",
+                        "exportable": "%X{X-Span-Export:-}",
+                        "baggage": "%X{key:-}",
+                        "severity": "%level",
+                        "service": "%contextName",
+                        "pid": "${PID:-}",
+                        "thread": "%thread",
+                        "class": "%logger{}",
+                        "message": "%message %nopex"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender name="USER_ERROR_DETAILS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${USER_ERROR_DETAILS}.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${ARCHIVED_LOG_DIR}/${USER_ERROR_DETAILS}-%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <timeZone>Europe/Stockholm</timeZone>
+                </timestamp>
+                <version/>
+                <context/>
+                <pattern>
+                    <omitEmptyFields>true</omitEmptyFields>
+                    <pattern>
+                        {
+                        "trace": "%X{X-B3-TraceId:-}",
+                        "span": "%X{X-B3-SpanId:-}",
+                        "parent": "%X{X-B3-ParentSpanId:-}",
+                        "exportable": "%X{X-Span-Export:-}",
+                        "baggage": "%X{key:-}",
+                        "severity": "%level",
+                        "service": "%contextName",
+                        "pid": "${PID:-}",
+                        "thread": "%thread",
+                        "class": "%logger{}",
+                        "message": "%message",
+                        "stacktrace": "%ex{full}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- LOGGERS -->
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <logger name="com.example.user" level="info">
+        <appender-ref ref="USER_INFO" />
+        <appender-ref ref="USER_WARN" />
+        <appender-ref ref="USER_ERROR" />
+        <appender-ref ref="USER_ERROR_DETAILS" />
+    </logger>
+
+    <!--<logger name="com.example.user" level="warn">
+        <appender-ref ref="USER_WARN" />
+    </logger>
+
+    <logger name="com.example.user" level="error">
+        <appender-ref ref="USER_ERROR" />
+        <appender-ref ref="USER_ERROR_DETAILS" />
+    </logger>-->
+</configuration>
