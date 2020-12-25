@@ -75,6 +75,19 @@
 		    <version>3.7.1</version>
 		</dependency>
 
+		<!-- API documentation -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-security</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+
 		<!-- VALIDATION DEPENDENCIES -->
 		<dependency>
 			<groupId>org.hibernate</groupId>

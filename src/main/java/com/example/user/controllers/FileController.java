@@ -1,6 +1,14 @@
 package com.example.user.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +35,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1/files")
+@Tag(name = "file", description = "the file API")
 public class FileController {
     private static String currentWorkingDirectory = System.getProperty("user.dir");
     private static String uploadDirectory = currentWorkingDirectory + "/src/main/resources/static/uploads";
@@ -41,8 +50,13 @@ public class FileController {
         System.out.println("***" + uploadsPath);
     }
 
-    @PostMapping
-    public ResponseEntity<String> uploadImage(@RequestParam MultipartFile file) {
+    @Operation(summary = "Upload Image", description = "Validates and saves the uploaded binary file if everything is approved.", tags = { "file" })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successful operation", content = @Content(schema = @Schema(implementation = MultipartFile.class))),
+            @ApiResponse(responseCode = "405", description = "Invalid input", content = @Content)
+    })
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> uploadImage(@Parameter(description = "The file to upload", required = false) @RequestParam MultipartFile file) {
         var filename = file.getOriginalFilename();
         var fileExtension = filename.substring(filename.lastIndexOf("."));
 
@@ -52,11 +66,6 @@ public class FileController {
 
         try {
             Files.copy(file.getInputStream(), Paths.get(uploadDirectory + File.separator + filename), StandardCopyOption.REPLACE_EXISTING);
-            //var targetLocation = new File(uploadDirectory + File.separator + filename);
-            //file.transferTo(targetLocation);
-            /*byte[] bytes = file.getBytes();
-            Path path = Paths.get(uploadDirectory + File.separator + filename);
-            Files.write(path, bytes);*/
         } catch(IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getLocalizedMessage());
         }
