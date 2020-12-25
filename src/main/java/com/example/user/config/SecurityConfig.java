@@ -33,37 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        /*authenticationManagerBuilder.inMemoryAuthentication()
-                .withUser("admin")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER");*/
     }
-
-    /*@Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .formLogin().disable()
-                .csrf().disable()
-                .authorizeRequests()
-                    .antMatchers("/api/v1/open/**").permitAll()
-                    .antMatchers("/**").authenticated()
-                .and()
-                .httpBasic().authenticationEntryPoint(entryPoint)
-                .and()
-                .logout(l -> l.logoutSuccessUrl("/"));
-
-    }*/
-
-    /*@Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .authorizeRequests()
-                    .antMatchers("/api/v1/open/**").permitAll()
-                    .antMatchers("/**").authenticated()
-                .and()
-                .oauth2Login()
-                .and().logout(l -> l.logoutSuccessUrl("/api/v1/users"));
-    }*/
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -71,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/open/**").permitAll()
+                    .antMatchers("/api/v1/users/init/**").permitAll()
                     .antMatchers("/**").authenticated()
                 .and()
                 .httpBasic().authenticationEntryPoint(authenticationEntryPoint)

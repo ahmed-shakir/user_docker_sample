@@ -28,29 +28,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class UserService {
-    //private Logger log = LoggerFactory.getLogger(UserService.class);
-    //@Autowired
-    //private UserRepository userRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /* Alternativ 1 - Fås automatiskt med lombok @RequiredArgsConstructor
-    private final UserRepository userRepository;
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public void init() {
+        if(userRepository.findByAclContaining("ADMIN").isEmpty()) {
+            userRepository.save(User.builder().username("admin").password(passwordEncoder.encode("password")).acl(List.of("ADMIN")).build());
+        }
     }
-    */
-    /* Alternativ 2
-    @Autowired
-    private UserRepository userRepository;
-    */
-
-    /**
-     * C - Create
-     * R - Read
-     * U - Update
-     * D - Delete
-     */
 
     @Cacheable(value = "userCache")
     public List<User> findAll(String name, boolean sortOnBirthday) {
@@ -95,24 +80,6 @@ public class UserService {
     @Cacheable(value = "userCache", key = "#id")
     public User findById(String id) {
         log.warn("Fresh data...");
-        /* Tillvägagångssätt 1
-        var userOptional = userRepository.findById(id);
-        if(userOptional.isEmpty()) {
-            throw new RuntimeException();
-        }
-        return userOptional.get();*/
-
-        /* Tillvägagångssätt 2
-        var userOptional = userRepository.findById(id);
-        if(userOptional.isPresent()) {
-            return userOptional.get();
-        }
-        throw new RuntimeException();*/
-
-        /* Tillvägagångssätt 3
-        return userRepository.findById(id).orElseThrow(RuntimeException::new); // () -> new RuntimeException();
-        */
-
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, // 404 -> Not found
                         String.format("Could not find the user by id %s.", id)));
@@ -144,15 +111,6 @@ public class UserService {
         }
         user.setId(id);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        /*user.setId(id);
-        user.setPhone("tel:" + user.getPhone());*/
-
-        /*user = User.builder()
-                .id(id)
-                .phone("tel:" + user.getPhone())
-                .build();*/
-
         userRepository.save(user);
     }
 

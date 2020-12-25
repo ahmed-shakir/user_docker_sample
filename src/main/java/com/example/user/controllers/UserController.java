@@ -25,17 +25,14 @@ import java.util.Map;
  * @version 1.0
  * @since 2020-10-15
  */
-// @Controller // MVC med statiska html sidor
 @RestController // REST API Endpoints
 @RequestMapping("/api/v1/users")    // X.Y.Z
 @Slf4j // logging
 public class UserController {
-    //final Logger log = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private OAuth2AuthorizedClientService authorizedClientService;
     @Autowired
     private UserService userService;
-    //private List<User> users;
 
     @Secured({"ROLE_ADMIN", "ROLE_EDITOR", "ROLE_USER"})
     @GetMapping
@@ -53,6 +50,34 @@ public class UserController {
         return ResponseEntity.ok(userService.findById(id));
     }
 
+    @Secured("ROLE_ADMIN")
+    @PostMapping
+    public ResponseEntity<User> saveUser(@Validated @RequestBody User user) {
+        var savedUser = userService.save(user);
+        var uri = URI.create("/api/v1/users/" + savedUser.getId()); // /api/v1/users/1
+        return ResponseEntity.created(uri).body(savedUser);
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_EDITOR", "ROLE_USER"})
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUser(@PathVariable String id, @Validated @RequestBody User user) {
+        userService.update(id, user);
+    }
+
+    @Secured("ROLE_ADMIN")
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable String id) {
+        userService.delete(id);
+    }
+
+    @GetMapping("/init")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void init() {
+        userService.init();
+    }
+
     @GetMapping("/details")
     public ResponseEntity<String> retrieveUserDetails(OAuth2AuthenticationToken authentication) {
         OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(authentication.getAuthorizedClientRegistrationId(), authentication.getName());
@@ -68,33 +93,5 @@ public class UserController {
             return ResponseEntity.ok("Client name: " + userAttributes.get("name"));
         }
         return ResponseEntity.badRequest().build();
-    }
-
-    @Secured("ROLE_ADMIN")
-    @PostMapping
-    public ResponseEntity<User> saveUser(@Validated @RequestBody User user) {
-        var savedUser = userService.save(user);
-        var uri = URI.create("/api/v1/users/" + savedUser.getId()); // /api/v1/users/1
-        return ResponseEntity.created(uri).body(savedUser);
-    }
-
-    /*@PutMapping("/{id}")
-    public ResponseEntity<Void> updateUser(@PathVariable String id, @RequestBody User user) {
-        userService.update(id, user);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }*/
-
-    @Secured({"ROLE_ADMIN", "ROLE_EDITOR", "ROLE_USER"})
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateUser(@PathVariable String id, @Validated @RequestBody User user) {
-        userService.update(id, user);
-    }
-
-    @Secured("ROLE_ADMIN")
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable String id) {
-        userService.delete(id);
     }
 }
