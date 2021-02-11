@@ -59,7 +59,7 @@ public class UserService {
     }
 
     public List<User> findAll(String fname, String lname, Boolean hasPet, boolean sortOnBirthday) {
-        log.info("Request to find all users");
+        log.info("-- Request to find all users --");
         var userStream = userRepository.findAll().stream();
 
         if(fname != null) {
