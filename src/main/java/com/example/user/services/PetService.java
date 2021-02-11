@@ -1,14 +1,16 @@
 package com.example.user.services;
 
-import com.example.user.entities.Pet;
-import com.example.user.repositories.PetRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import com.example.user.entities.Pet;
+import com.example.user.repositories.PetRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * User service, business logic
@@ -39,9 +41,9 @@ public class PetService {
 
     public void update(String id, Pet pet) {
         if(!petRepository.existsById(id)) {
-            log.error(String.format("Could not find the pet by id %s.", id));
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, // 404 -> Not found
-                    String.format("Could not find the pet by id %s.", id));
+            String errorMsg = String.format("Could not find the pet by id %s.", id);
+            log.error(errorMsg);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMsg); // 404 -> Not found
         }
         pet.setId(id);
         petRepository.save(pet);
