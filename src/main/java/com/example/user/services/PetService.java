@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class PetService {
     private final PetRepository petRepository;
+    private static final String ERROR_MSG_WITH_PARAM = "Could not find the pet by id %s.";
 
     public List<Pet> findAll() {
         return petRepository.findAll();
@@ -32,7 +33,7 @@ public class PetService {
     public Pet findById(String id) {
         return petRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, // 404 -> Not found
-                        String.format("Could not find the pet by id %s.", id)));
+                        String.format(ERROR_MSG_WITH_PARAM, id)));
     }
 
     public Pet save(Pet pet) {
@@ -41,7 +42,7 @@ public class PetService {
 
     public void update(String id, Pet pet) {
         if(!petRepository.existsById(id)) {
-            String errorMsg = String.format("Could not find the pet by id %s.", id);
+            String errorMsg = String.format(ERROR_MSG_WITH_PARAM, id);
             log.error(errorMsg);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMsg); // 404 -> Not found
         }
@@ -52,7 +53,7 @@ public class PetService {
     public void delete(String id) {
         if(!petRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, // 404 -> Not found
-                    String.format("Could not find the pet by id %s.", id));
+                    String.format(ERROR_MSG_WITH_PARAM, id));
         }
         petRepository.deleteById(id);
     }
