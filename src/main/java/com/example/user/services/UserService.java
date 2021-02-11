@@ -1,9 +1,9 @@
 package com.example.user.services;
 
-import com.example.user.entities.User;
-import com.example.user.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,9 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.example.user.entities.User;
+import com.example.user.repositories.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * User service, business logic
@@ -39,7 +41,7 @@ public class UserService {
 
     @Cacheable(value = "userCache")
     public List<User> findAll(String name, boolean sortOnBirthday) {
-        log.info("Request to find all users");
+        log.info("-- Request to find all users --");
         log.warn("Fresh data...");
         //return userRepository.findAll();
         var users = userRepository.findAll();
@@ -57,7 +59,7 @@ public class UserService {
     }
 
     public List<User> findAll(String fname, String lname, Boolean hasPet, boolean sortOnBirthday) {
-        log.info("Request to find all users");
+        log.info("-- Request to find all users --");
         var userStream = userRepository.findAll().stream();
 
         if(fname != null) {
